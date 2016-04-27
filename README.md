@@ -1,2 +1,1 @@
-# arts-ranklib
-Enhanced Ranklib
+## arts-ranklib

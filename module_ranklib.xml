@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_ranklib" default="compile.module.ranklib">
+  <dirname property="module.ranklib.basedir" file="${ant.file.module_ranklib}"/>
+  
+  <property name="module.jdk.home.ranklib" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.ranklib" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.ranklib" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.ranklib" value="-encoding UTF-8 -source 8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="ranklib.output.dir" value="${module.ranklib.basedir}/target/classes"/>
+  <property name="ranklib.testoutput.dir" value="${module.ranklib.basedir}/target/test-classes"/>
+  
+  <path id="ranklib.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="ranklib.module.production.classpath">
+    <path refid="${module.jdk.classpath.ranklib}"/>
+  </path>
+  
+  <path id="ranklib.runtime.production.module.classpath">
+    <pathelement location="${ranklib.output.dir}"/>
+  </path>
+  
+  <path id="ranklib.module.classpath">
+    <path refid="${module.jdk.classpath.ranklib}"/>
+    <pathelement location="${ranklib.output.dir}"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+  </path>
+  
+  <path id="ranklib.runtime.module.classpath">
+    <pathelement location="${ranklib.testoutput.dir}"/>
+    <pathelement location="${ranklib.output.dir}"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.ranklib">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.ranklib">
+    <patternset refid="excluded.from.module.ranklib"/>
+  </patternset>
+  
+  <path id="ranklib.module.sourcepath">
+    <dirset dir="${module.ranklib.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="ranklib.module.test.sourcepath">
+    <dirset dir="${module.ranklib.basedir}">
+      <include name="test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.ranklib" depends="compile.module.ranklib.production,compile.module.ranklib.tests" description="Compile module RankLib"/>
+  
+  <target name="compile.module.ranklib.production" depends="register.custom.compilers" description="Compile module RankLib; production classes">
+    <mkdir dir="${ranklib.output.dir}"/>
+    <javac2 destdir="${ranklib.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.ranklib}/javac">
+      <compilerarg line="${compiler.args.ranklib}"/>
+      <bootclasspath refid="ranklib.module.bootclasspath"/>
+      <classpath refid="ranklib.module.production.classpath"/>
+      <src refid="ranklib.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.ranklib"/>
+    </javac2>
+    
+    <copy todir="${ranklib.output.dir}">
+      <fileset dir="${module.ranklib.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.ranklib.tests" depends="register.custom.compilers,compile.module.ranklib.production" description="compile module RankLib; test classes" unless="skip.tests">
+    <mkdir dir="${ranklib.testoutput.dir}"/>
+    <javac2 destdir="${ranklib.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.ranklib}/javac">
+      <compilerarg line="${compiler.args.ranklib}"/>
+      <bootclasspath refid="ranklib.module.bootclasspath"/>
+      <classpath refid="ranklib.module.classpath"/>
+      <src refid="ranklib.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.ranklib"/>
+    </javac2>
+    
+    <copy todir="${ranklib.testoutput.dir}">
+      <fileset dir="${module.ranklib.basedir}/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.ranklib" description="cleanup module">
+    <delete dir="${ranklib.output.dir}"/>
+    <delete dir="${ranklib.testoutput.dir}"/>
+  </target>
+</project>
